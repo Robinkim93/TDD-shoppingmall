@@ -1,8 +1,35 @@
+import { rest } from "msw";
 import { setupServer } from "msw/node";
-import { handler } from "./handler";
 
-// mocking server 생성
+const server = setupServer([
+  rest.get(`http://localhost:4000/products`, (req, res, ctx) => {
+    return res(
+      ctx.json([
+        {
+          name: "America",
+          imagePath: "/images/america.jpeg",
+        },
+        {
+          name: "England",
+          imagePath: "/images/england.jpeg",
+        },
+      ])
+    );
+  }),
+  rest.get(`http://localhost:4000/options`, (req, res, ctx) => {
+    return res(
+      ctx.json([
+        {
+          name: "Insurance",
+        },
+        { name: "Dinner" },
+      ])
+    );
+  }),
+]);
 
-const server = setupServer(...handler);
+beforeAll(() => server.listen());
 
-export default server;
+afterEach(() => server.resetHandlers());
+
+afterAll(() => server.close());
